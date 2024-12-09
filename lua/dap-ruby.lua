@@ -77,6 +77,10 @@ local function setup_ruby_adapter(dap)
 		port = port or pick_port()
 
 		if config.command then
+			if config.nonstop then
+				vim.env.RUBY_DEBUG_NONSTOP = true
+			end
+
 			vim.env.RUBY_DEBUG_OPEN = true
 			vim.env.RUBY_DEBUG_HOST = server
 			vim.env.RUBY_DEBUG_PORT = port
@@ -108,7 +112,10 @@ local function setup_ruby_configuration(dap, additional_config)
 
 	local config = additional_config or {}
 
-	table.insert(config, extend_run_config({ name = "run rails", command = "bundle", args = { "exec", "rails", "s" } }))
+	table.insert(
+		config,
+		extend_run_config({ name = "run rails", command = "bundle", nonstop = true, args = { "exec", "rails", "s" } })
+	)
 	table.insert(
 		config,
 		extend_run_config({
@@ -128,7 +135,6 @@ local function setup_ruby_configuration(dap, additional_config)
 		})
 	)
 	table.insert(config, extend_run_config({ name = "run rspec", command = "bundle", args = { "exec", "rspec" } }))
-	table.insert(config, extend_run_config({ name = "bin/dev", command = "bin/dev" }))
 	table.insert(config, extend_base_config({ name = "attach existing (port 38698)", port = 38698, waiting = 0 }))
 	table.insert(config, extend_base_config({ name = "attach existing (pick port)", waiting = 0 }))
 
